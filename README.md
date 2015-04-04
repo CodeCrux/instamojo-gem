@@ -1,8 +1,6 @@
-# Instamojo
+# Instamojo API for Ruby
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/instamojo`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+`instamojo-gem` is an un-official ruby client for [Instamojo API][https://www.instamojo.com/developers/rest/]. Instamojo API lets you manage payment links directly in into your application. It currently supports version `1.1`.
 
 ## Installation
 
@@ -20,15 +18,50 @@ Or install it yourself as:
 
     $ gem install instamojo
 
+
+## Authentication Keys
+
+You can find your API_KEY and AUTH_TOKEN at the API Documentation Page. Create an account on Instamojo, log in and visit this [link](https://www.instamojo.com/api/1.1/docs/)
+
 ## Usage
 
-TODO: Write usage instructions here
+Before making any calls, you must supply api_key and auth_token to instamojo-gem. By default it will take `ENV['IMOJO_API_KEY']` as api_key and `ENV['IMOJO_AUTH_TOKEN]` as auth_token. You can also configure these credentials like
 
-## Development
+```
+Instamojo.api_key = 'xxxx'
+Instamojo.auth_token = 'xxx'
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment. 
+# OR
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Instamojo::Client.new(api_key: 'xxx', auth_token: 'xxx')
+
+```
+
+instamojo-gem provides following functions to interact with the API:
+
+* `links`
+* `link_edit(slug, options = {})`
+* `link_details(slug)`
+* `link_create(title, description, base_price, options = {})`
+* `link_delete(slug)`
+* `payments`
+* `payment_details(payment_id)`
+
+
+You can either access above methods with `Instamojo` module or instantiating new client with api credentials like:
+
+```
+## To get a link's detail
+Instamojo.link_details('test-123')
+
+## Or
+client = Instamojo::Client.new(api_key: 'xxx', auth_token: 'xxx')
+client.link_details('test-123')
+
+```
+
+Please open an issue to report bugs or enhancements.
+
 
 ## Contributing
 
