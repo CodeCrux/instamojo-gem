@@ -1,6 +1,6 @@
 # Instamojo API for Ruby
 
-`instamojo-gem` is an un-official ruby client for [Instamojo API][https://www.instamojo.com/developers/rest/]. Instamojo API lets you manage payment links directly in into your application. It currently supports version `1.1`.
+`instamojo-gem` is an un-official ruby client for [Instamojo API](https://www.instamojo.com/developers/rest/). Instamojo API lets you manage payment links directly in into your application. It currently supports version `1.1`.
 
 ## Installation
 
