@@ -10,9 +10,9 @@ describe Instamojo do
     expect(Instamojo.api_key).to eq('abc')
   end
 
-  it 'should set api_key' do
-    Instamojo.api_token = 'abc'
-    expect(Instamojo.api_token).to eq('abc')
+  it 'should set auth_key' do
+    Instamojo.auth_token = 'abc'
+    expect(Instamojo.auth_token).to eq('abc')
   end
   
   it 'should have a client' do

@@ -14,8 +14,8 @@ module Instamojo
     extend Forwardable
     
     def_delegators :client, 
-                   :api_key, :api_token,
-                   :api_key=, :api_token=
+                   :api_key, :auth_token, :secret_salt,
+                   :api_key=, :auth_token=, :secret_salt=
     
     def_delegators :client,
                    :debug, 
@@ -25,7 +25,8 @@ module Instamojo
                    :link_edit,
                    :link_delete,
                    :payments,
-                   :payment_details
+                   :payment_details,
+                   :valid_mac?
     
     def logger
       @logger ||= lambda {
@@ -37,8 +38,8 @@ module Instamojo
     
     def client
       @client ||= Instamojo::Client.new(
-        :api_key   => ENV['IMOJO_API_KEY'],
-        :api_token => ENV['IMOJO_API_TOKEN'] 
+        :api_key    => ENV['IMOJO_API_KEY'],
+        :auth_token => ENV['IMOJO_AUTH_TOKEN'] 
       )
     end
     

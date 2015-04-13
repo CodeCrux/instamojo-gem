@@ -21,7 +21,7 @@ Or install it yourself as:
 
 ## Authentication Keys
 
-You can find your API_KEY and AUTH_TOKEN at the API Documentation Page. Create an account on Instamojo, log in and visit this [link](https://www.instamojo.com/api/1.1/docs/)
+You can find your `API_KEY` and `AUTH_TOKEN` at the API Documentation Page. Create an account on Instamojo, log in and visit this [link](https://www.instamojo.com/api/1.1/docs/)
 
 ## Usage
 
@@ -62,6 +62,23 @@ client.link_details('test-123')
 
 Please open an issue to report bugs or enhancements.
 
+You can configure `Instamojo.logger` according to you need as well.
+
+```
+Instamojo.logger = Rails.logger || Logger.new($stdout)
+Instamojo.logger.level = Logging::DEBUG
+
+... 
+```
+
+#### To verify message authentication code (mac) in web hook
+
+```
+## Salt is the secret string given by Instamojo
+### and options is a hash of webhook parameters
+
+Instamojo.valid_mac?(options, salt) # => true|false
+```
 
 ## Contributing
 

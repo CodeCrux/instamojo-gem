@@ -3,33 +3,50 @@ require 'excon'
 module Instamojo
   class Client
     
-    attr_accessor :api_key, :api_token, :api_url, :api_version
+    attr_accessor :api_key, :auth_token, :api_url, :api_version, :secret_salt
     
     CONFIG = {
       :api_url => 'https://www.instamojo.com/api',
       :api_version => '1.1',
-      :api_headers => lambda { |api_key, api_token|
+      :api_headers => lambda { |api_key, auth_token|
         user_agent = "instamojo-ruby, #{Instamojo::VERSION}"
         user_agent += ", #{RUBY_VERSION}, #{RUBY_PLATFORM}, #{RUBY_PATCHLEVEL}"
         if defined?(RUBY_ENGINE)
           user_agent += ", #{RUBY_ENGINE}"
         end
         { 
-          "Content-Type"  => "application/json",
-          "User-Agent"    => user_agent,
-          "X-Api-Key"     => api_key,
-          'X-Auth-Token'   => api_token
+          "Content-Type" => "application/json",
+          "User-Agent"   => user_agent,
+          "X-Api-Key"    => api_key,
+          'X-Auth-Token' => auth_token
         }
       }
     }
     
+    WEBHOOK_PARAMS = [
+      :payment_id, 
+      :status, 
+      :offer_slug, 
+      :offer_title, 
+      :buyer, 
+      :buyer_name, 
+      :buyer_phone,
+      :currency, 
+      :quantity, 
+      :unit_price, 
+      :amount, 
+      :fees,
+      :custom_fields,
+      :variants
+    ]  
+    
     def initialize(*args)
       options = args[0]
       unless options.is_a?(Hash)
-        options = { api_key: args[0], api_token: args[1] }.merge(args[2] || {})
+        options = { api_key: args[0], auth_token: args[1] }.merge(args[2] || {})
       end
       
-      self.api_key, self.api_token = options.values_at(:api_key, :api_token)
+      self.api_key, self.auth_token = options.values_at(:api_key, :auth_token)
 
       self.api_url =  options[:api_url] || CONFIG[:api_url]
       self.api_version = options[:api_version] || CONFIG[:api_version]
@@ -83,6 +100,18 @@ module Instamojo
       api_call(:get, '/links/get_file_upload_url')['upload_url']
     end
     
+    def valid_mac? options, salt = nil
+      require 'openssl'
+      options   = options.dup
+      mac       = options.delete(:mac)
+      params    = options.select{|k,v| WEBHOOK_PARAMS.include?(k) }
+      signature = params.sort.map{|t| t[1] }.join('|')
+      salt      ||= (secret_salt  || ENV['IMOJO_SECRET'] )
+      digest    = OpenSSL::HMAC.hexdigest('sha1', salt, signature)
+
+      mac == digest
+    end
+
     private
     
     def api_call method, path, params = {}
@@ -113,7 +142,7 @@ module Instamojo
         response
       end
     end
-    
+        
     def raise_error response
       case response
       when Hash
@@ -124,7 +153,7 @@ module Instamojo
     end
     
     def headers
-      CONFIG[:api_headers].call(self.api_key, self.api_token)
+      CONFIG[:api_headers].call(self.api_key, self.auth_token)
     end
     
     def resource_path path
